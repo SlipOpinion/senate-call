@@ -369,17 +369,6 @@ function tally() {
   return { d, r, open };
 }
 
-function verdict() {
-  const { d, r, open } = tally();
-  const net = d - BASE.D;
-  const netTxt = net === 0 ? "No net change" : `${net > 0 ? "Democrats" : "Republicans"} gain ${Math.abs(net)}`;
-  const left = open ? `${open} still uncalled` : "all seven called";
-  if (open === RACES.length) return { head: "No picks yet", sub: "Your projected Senate updates as you go" };
-  if (d >= 51) return { head: "Democrats win control", sub: `${netTxt} · ${left}` };
-  if (r >= 50) return { head: "Republicans keep control", sub: `${netTxt} · ${left}` };
-  return { head: "Control still up for grabs", sub: `${netTxt} · ${left}` };
-}
-
 function render() {
   const { d, r, open } = tally();
   const n = RACES.length - open;
@@ -436,7 +425,7 @@ function roundRect(ctx, x, y, w, h, r) {
 async function drawBallot() {
   await document.fonts.ready;
   const W = 640, PAD = 32, ROW = 46, S = 2;
-  const H = 214 + RACES.length * ROW + 96;
+  const H = 96 + RACES.length * ROW + 72;
   const cv = document.createElement("canvas");
   cv.width = W * S; cv.height = H * S;
   const ctx = cv.getContext("2d");
@@ -450,38 +439,16 @@ async function drawBallot() {
 
   ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H);
 
-  // masthead
-  ctx.fillStyle = ink; ctx.textAlign = "center";
-  ctx.font = `700 30px ${SERIF}`; ctx.fillText("The Senate Call", W / 2, 54);
-  line(70, ink); line(74, ink);
-  ctx.font = `600 11px ${SANS}`; ctx.fillStyle = muted;
-  ctx.fillText("2026 SENATE BATTLEGROUND PICKS", W / 2, 94);
-
-  // who + verdict
-  ctx.textAlign = "left";
-  const who = state.name ? "@" + state.name : "My picks";
-  ctx.fillStyle = ink; ctx.font = `600 24px ${SERIF}`; ctx.fillText(who, PAD, 134);
-  const v = verdict();
-  ctx.textAlign = "right"; ctx.font = `700 14px ${SANS}`; ctx.fillText(v.head, W - PAD, 124);
-  ctx.font = `500 11.5px ${SANS}`; ctx.fillStyle = muted; ctx.fillText(v.sub, W - PAD, 141);
-  ctx.textAlign = "left";
-
-  // seat strip
-  const { d, r } = tally();
-  const sx = PAD, sw = W - PAD * 2, cell = sw / 100, sy = 158;
-  for (let i = 0; i < 100; i++) {
-    ctx.fillStyle = i < d ? dem : i >= 100 - r ? rep : "#e2e2e2";
-    ctx.fillRect(sx + i * cell, sy, cell - 1, 14);
-  }
-  ctx.fillStyle = ink; ctx.fillRect(sx + sw / 2 - 0.75, sy - 5, 1.5, 24);
-  ctx.font = `700 13px ${SANS}`;
-  ctx.fillStyle = dem; ctx.fillText(`${d} Dem.`, PAD, 192);
-  ctx.textAlign = "right"; ctx.fillStyle = rep; ctx.fillText(`${r} Rep.`, W - PAD, 192);
-  ctx.textAlign = "center"; ctx.fillStyle = muted; ctx.font = `500 11px ${SANS}`; ctx.fillText("51 for control", W / 2, 192);
+  // who
+  const n = RACES.filter(x => state.picks[x.id]).length;
+  ctx.fillStyle = ink; ctx.font = `600 26px ${SERIF}`;
+  ctx.fillText(state.name ? "@" + state.name : "My picks", PAD, 56);
+  ctx.textAlign = "right"; ctx.fillStyle = muted; ctx.font = `500 12px ${SANS}`;
+  ctx.fillText(`${n} of ${RACES.length} races picked`, W - PAD, 56);
   ctx.textAlign = "left";
 
   // table header
-  let y = 214;
+  let y = 76;
   ctx.font = `700 10.5px ${SANS}`; ctx.fillStyle = muted;
   const cx = { st: PAD, pk: PAD + 120, cf: PAD + 410, fl: W - PAD };
   ctx.fillText("STATE", cx.st, y + 12); ctx.fillText("PICK", cx.pk, y + 12); ctx.fillText("CONFIDENCE", cx.cf, y + 12);
@@ -521,8 +488,12 @@ async function drawBallot() {
   // footer
   line(y + 22, ink); line(y + 26, ink);
   ctx.fillStyle = muted; ctx.font = `500 11px ${SANS}`;
-  ctx.fillText(new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }), PAD, y + 48);
-  ctx.textAlign = "right"; ctx.fillText("Election Day: Nov. 3, 2026", W - PAD, y + 48);
+  ctx.fillText("2026 Senate battleground picks", PAD, y + 48);
+  // Stamped in the viewer's own time zone, e.g. "October 4, 2026, 3:42 PM EDT"
+  const stamp = new Date().toLocaleString("en-US", {
+    month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short",
+  });
+  ctx.textAlign = "right"; ctx.fillText(stamp, W - PAD, y + 48);
 
   return new Promise(res => cv.toBlob(res, "image/png"));
 }
