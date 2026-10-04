@@ -25,9 +25,9 @@
     --rep: #c4302b;
     --rep-tint: #fbecea;
     --open: #e2e2e2;
-    --lean-bg: #ffe0c2;   --lean-ink: #9a4d0f;   --lean-line: #f5b886;
-    --likely-bg: #fff2a8; --likely-ink: #7d6400; --likely-line: #ead66a;
-    --safe-bg: #d3efd5;   --safe-ink: #2b6b35;   --safe-line: #9fd3a5;
+    --lean-bg: #fffae0;   --lean-ink: #7a6a12;   --lean-line: #efe3a6;
+    --likely-bg: #d6f0d8; --likely-ink: #2b6b35; --likely-line: #a6d8ac;
+    --safe-bg: #2e9e4f;   --safe-ink: #ffffff;   --safe-line: #2e9e4f;
     --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
     --sans: "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
   }
@@ -132,7 +132,8 @@
   .conf button:disabled { cursor: default; }
   .conf button[data-c="0"]:hover, .conf button[data-c="0"][aria-pressed="true"] { border-color: var(--lean-line); color: var(--lean-ink); }
   .conf button[data-c="1"]:hover, .conf button[data-c="1"][aria-pressed="true"] { border-color: var(--likely-line); color: var(--likely-ink); }
-  .conf button[data-c="2"]:hover, .conf button[data-c="2"][aria-pressed="true"] { border-color: var(--safe-line); color: var(--safe-ink); }
+  .conf button[data-c="2"]:hover { border-color: var(--safe-line); color: var(--safe-bg); }
+  .conf button[data-c="2"][aria-pressed="true"] { border-color: var(--safe-line); color: var(--safe-ink); }
   .conf button[data-c="0"][aria-pressed="true"] { background: var(--lean-bg); }
   .conf button[data-c="1"][aria-pressed="true"] { background: var(--likely-bg); }
   .conf button[data-c="2"][aria-pressed="true"] { background: var(--safe-bg); }
