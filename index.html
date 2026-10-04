@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Senate Call</title>
+<meta name="description" content="Pick the winners in seven 2026 Senate battlegrounds and share your forecast.">
+<meta property="og:title" content="The Senate Call — 2026">
+<meta property="og:description" content="Who will control the Senate? Make your picks in seven key races.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #ffffff;
+    --tint: #f5f4f0;
+    --ink: #111111;
+    --ink-2: #333333;
+    --muted: #666666;
+    --faint: #8a8a8a;
+    --rule: #d6d6d6;
+    --rule-dark: #111111;
+    --dem: #1c66b0;
+    --dem-tint: #eaf1f9;
+    --rep: #c4302b;
+    --rep-tint: #fbecea;
+    --open: #e2e2e2;
+    --lean-bg: #ffe0c2;   --lean-ink: #9a4d0f;   --lean-line: #f5b886;
+    --likely-bg: #fff2a8; --likely-ink: #7d6400; --likely-line: #ead66a;
+    --safe-bg: #d3efd5;   --safe-ink: #2b6b35;   --safe-line: #9fd3a5;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --sans: "Libre Franklin", "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--serif); line-height: 1.5;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--dem); outline-offset: 2px; }
+
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+  .col { max-width: 720px; margin: 0 auto; }
+  @media (min-width: 720px) { .wrap { padding: 0 32px; } }
+
+  .label {
+    font-family: var(--sans); font-size: 11px; font-weight: 700;
+    letter-spacing: .09em; text-transform: uppercase; color: var(--ink);
+  }
+  .meta { font-family: var(--sans); font-size: 13px; color: var(--muted); }
+
+  /* ---------- section ---------- */
+  .section-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    border-bottom: 1px solid var(--rule-dark); padding: 44px 0 8px; flex-wrap: wrap;
+  }
+  .section-head.top { padding-top: 28px; }
+  .section-head h2 { font-family: var(--serif); font-size: 26px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  .textbtn {
+    background: none; border: 0; padding: 0; font-family: var(--sans); font-size: 12px; font-weight: 600;
+    color: var(--muted); text-decoration: underline; text-underline-offset: 3px;
+  }
+  .textbtn:hover { color: var(--ink); }
+
+  /* ---------- race rows ---------- */
+  .race {
+    display: grid; grid-template-columns: 1fr; gap: 14px 40px;
+    padding: 26px 0 28px; border-bottom: 1px solid var(--rule);
+  }
+  @media (min-width: 820px) { .race { grid-template-columns: 300px 1fr; } }
+  .race-info h3 {
+    font-family: var(--serif); font-weight: 600; font-size: 28px; line-height: 1.1;
+    margin: 6px 0 8px; letter-spacing: -.01em;
+  }
+  .race-info .label { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; color: var(--muted); }
+  .race-info .label .held-D { color: var(--dem); }
+  .race-info .label .held-R { color: var(--rep); }
+  .race-info .label .dot { color: var(--rule); }
+  .race-info p { font-size: 16px; color: var(--ink-2); margin: 0; line-height: 1.5; }
+  .flip {
+    display: none; font-family: var(--sans); font-size: 10.5px; font-weight: 800; letter-spacing: .08em;
+    text-transform: uppercase; padding: 2px 6px; color: #fff; margin-left: 2px;
+  }
+  .race.is-flip .flip { display: inline-block; }
+  .race[data-pick="D"] .flip { background: var(--dem); }
+  .race[data-pick="R"] .flip { background: var(--rep); }
+
+  .ballot { border-top: 2px solid var(--ink); }
+  .cand {
+    width: 100%; display: grid; grid-template-columns: 22px 1fr auto; gap: 14px; align-items: start;
+    text-align: left; background: none; border: 0; border-bottom: 1px solid var(--rule);
+    padding: 14px 12px 14px 8px; position: relative; transition: background .15s;
+  }
+  .cand:hover { background: var(--tint); }
+  .cand .radio {
+    width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #9a9a9a; margin-top: 2px;
+    display: grid; place-items: center; background: #fff;
+  }
+  .cand[aria-pressed="true"] .radio::after { content: ""; width: 10px; height: 10px; border-radius: 50%; }
+  .cand.D[aria-pressed="true"] { background: var(--dem-tint); }
+  .cand.R[aria-pressed="true"] { background: var(--rep-tint); }
+  .cand.D[aria-pressed="true"] .radio { border-color: var(--dem); }
+  .cand.R[aria-pressed="true"] .radio { border-color: var(--rep); }
+  .cand.D[aria-pressed="true"] .radio::after { background: var(--dem); }
+  .cand.R[aria-pressed="true"] .radio::after { background: var(--rep); }
+  .cand[aria-pressed="true"]::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+  .cand.D[aria-pressed="true"]::before { background: var(--dem); }
+  .cand.R[aria-pressed="true"]::before { background: var(--rep); }
+  .cand .nm { font-family: var(--sans); font-weight: 700; font-size: 17px; line-height: 1.25; display: block; }
+  .cand .pty { font-family: var(--sans); font-weight: 700; font-size: 13px; }
+  .cand.D .pty { color: var(--dem); }
+  .cand.R .pty { color: var(--rep); }
+  .cand .bio { font-family: var(--sans); font-size: 13.5px; color: var(--muted); display: block; margin-top: 3px; line-height: 1.4; }
+  .cand .inc {
+    font-family: var(--sans); font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--muted); border: 1px solid var(--rule); padding: 2px 6px; align-self: center; white-space: nowrap;
+  }
+  .race[data-pick] .cand[aria-pressed="false"] .nm,
+  .race[data-pick] .cand[aria-pressed="false"] .pty { color: var(--faint); }
+
+  .conf { display: flex; align-items: center; gap: 14px; margin-top: 12px; font-family: var(--sans); font-size: 13px; flex-wrap: wrap; min-height: 24px; }
+  .conf .label { color: var(--muted); }
+  .conf .opts { display: inline-flex; gap: 6px; }
+  .conf button {
+    background: #fff; border: 1px solid var(--rule); border-radius: 999px;
+    padding: 4px 13px; font-size: 13px; font-weight: 600; color: var(--muted);
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .conf button:disabled { cursor: default; }
+  .conf button[data-c="0"]:hover, .conf button[data-c="0"][aria-pressed="true"] { border-color: var(--lean-line); color: var(--lean-ink); }
+  .conf button[data-c="1"]:hover, .conf button[data-c="1"][aria-pressed="true"] { border-color: var(--likely-line); color: var(--likely-ink); }
+  .conf button[data-c="2"]:hover, .conf button[data-c="2"][aria-pressed="true"] { border-color: var(--safe-line); color: var(--safe-ink); }
+  .conf button[data-c="0"][aria-pressed="true"] { background: var(--lean-bg); }
+  .conf button[data-c="1"][aria-pressed="true"] { background: var(--likely-bg); }
+  .conf button[data-c="2"][aria-pressed="true"] { background: var(--safe-bg); }
+  .pill {
+    display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12px; font-weight: 600; border: 1px solid;
+  }
+  .pill.c0 { background: var(--lean-bg); color: var(--lean-ink); border-color: var(--lean-line); }
+  .pill.c1 { background: var(--likely-bg); color: var(--likely-ink); border-color: var(--likely-line); }
+  .pill.c2 { background: var(--safe-bg); color: var(--safe-ink); border-color: var(--safe-line); }
+  .conf .prompt { color: var(--faint); font-style: italic; font-family: var(--serif); font-size: 15px; }
+  .race:not([data-pick]) .conf .opts, .race:not([data-pick]) .conf .label { display: none; }
+  .race[data-pick] .conf .prompt { display: none; }
+
+  .result {
+    display: none; font-family: var(--sans); font-size: 12px; font-weight: 700; margin-top: 10px;
+  }
+  .result.show { display: block; }
+  .result.hit { color: #1d7a3a; }
+  .result.miss { color: var(--rep); }
+  .result.called { color: var(--muted); }
+
+  /* ---------- your ballot + share ---------- */
+  .summary { display: grid; grid-template-columns: 1fr; gap: 32px; padding: 8px 0 0; }
+  @media (min-width: 860px) { .summary { grid-template-columns: 1.15fr 1fr; gap: 48px; } }
+  table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: 14px; }
+  th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 14px 8px 8px 0; border-bottom: 1px solid var(--rule-dark); }
+  td { padding: 10px 8px 10px 0; vertical-align: middle; border-bottom: 1px solid var(--rule); }
+  td.st { font-weight: 700; }
+  td .sw { display: inline-block; width: 9px; height: 9px; margin-right: 7px; vertical-align: 1px; }
+  td .sw.D { background: var(--dem); } td .sw.R { background: var(--rep); }
+  td.none { color: var(--faint); font-style: italic; font-family: var(--serif); }
+  td.fl { font-weight: 700; font-size: 12px; }
+  tfoot td { border-bottom: 0; border-top: 1px solid var(--rule-dark); font-weight: 700; padding-top: 12px; }
+
+  .share { border-top: 1px solid var(--rule-dark); padding-top: 18px; margin-top: 14px; }
+  @media (min-width: 860px) { .share { margin-top: 0; border-top: 0; padding-top: 14px; } }
+  .share h3 { font-family: var(--serif); font-weight: 600; font-size: 24px; margin: 4px 0 6px; }
+  .share p { font-size: 16px; color: var(--ink-2); margin: 0 0 18px; }
+  .field label { display: block; margin-bottom: 4px; color: var(--muted); }
+  .field input {
+    width: 100%; border: 0; border-bottom: 1.5px solid var(--ink); background: transparent; border-radius: 0;
+    font-family: var(--serif); font-size: 22px; padding: 6px 0 8px;
+  }
+  .field input::placeholder { color: #b3b3b3; font-style: italic; }
+  .field input:focus { outline: none; border-bottom-color: var(--dem); }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .btn {
+    font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: 12px 18px; border: 1.5px solid var(--ink); background: var(--ink); color: #fff;
+  }
+  .btn:hover { background: #333; border-color: #333; color: #fff; }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn:disabled:hover { background: var(--ink); border-color: var(--ink); }
+  .hint { font-family: var(--sans); font-size: 12px; color: var(--muted); margin-top: 10px; min-height: 1.3em; word-break: break-all; }
+
+  footer { margin-top: 56px; border-top: 3px double var(--rule-dark); padding: 18px 0 48px; }
+  footer p { font-family: var(--sans); font-size: 12.5px; color: var(--muted); margin: 0 0 8px; max-width: 75ch; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 16px);
+    background: var(--ink); color: #fff; padding: 11px 18px; font-family: var(--sans); font-size: 13px; font-weight: 600;
+    opacity: 0; pointer-events: none; transition: all .2s; z-index: 50;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 560px) {
+    .cand .inc { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="wrap">
+    <div class="section-head top" id="races">
+      <h2>2026 Senate Races</h2>
+      <button type="button" class="textbtn" id="clear">Clear all picks</button>
+    </div>
+    <div id="list"></div>
+
+    <div class="section-head" id="ballot">
+      <h2>Your Ballot</h2>
+      <span class="meta" id="score"></span>
+    </div>
+    <div class="summary">
+      <table>
+        <thead><tr><th>State</th><th>Pick</th><th>Confidence</th><th></th></tr></thead>
+        <tbody id="tbody"></tbody>
+        <tfoot><tr><td>Senate</td><td colspan="3" id="tfoot">—</td></tr></tfoot>
+      </table>
+
+      <div class="share" id="share">
+        <div class="label">Share</div>
+        <h3>Put your name on it</h3>
+        <p>Copy your ballot as an image and paste it straight into Discord. Check back on election night to see who called it.</p>
+        <div class="field">
+          <label class="label" for="name">Discord username</label>
+          <input id="name" maxlength="32" placeholder="Enter your Discord username" autocomplete="off" autocapitalize="off" spellcheck="false">
+        </div>
+        <div class="actions">
+          <button type="button" class="btn" id="copyImg">Copy ballot as image</button>
+        </div>
+        <div class="hint" id="hint"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Made for fun, and not affiliated with any campaign or news organization. Seat totals assume every Senate seat outside these seven stays with the party that holds it now.</p>
+    <p>Alaska's general election uses ranked-choice voting. Maine Democrats nominated Troy Jackson at a July convention after Graham Platner withdrew.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ===== Edit these to update the page ===== */
+
+// Election night: fill in winners like { MI: "D", TX: "R" } and every
+// prediction gets marked right or wrong, with a score.
+const RESULTS = {};
+
+// inc: which candidate is the incumbent, if any
+const RACES = [
+  { id: "MI", state: "Michigan", held: "D", kind: "Open seat",
+    note: "Gary Peters is retiring. El-Sayed beat Rep. Haley Stevens in the August primary despite being outspent 8 to 1.",
+    D: { name: "Abdul El-Sayed", bio: "Former Detroit health director" },
+    R: { name: "Mike Rogers", bio: "Former congressman; lost the 2024 Senate race by 0.3 points" } },
+  { id: "TX", state: "Texas", held: "R", kind: "Open seat",
+    note: "Paxton ousted four-term Sen. John Cornyn in the May runoff, 64% to 36%.",
+    D: { name: "James Talarico", bio: "State representative and former teacher" },
+    R: { name: "Ken Paxton", bio: "Texas attorney general" } },
+  { id: "ME", state: "Maine", held: "R", kind: "Incumbent", inc: "R",
+    note: "Collins is the only Republican senator on the ballot in a state Kamala Harris won.",
+    D: { name: "Troy Jackson", bio: "Former state Senate president; replaced Graham Platner in July" },
+    R: { name: "Susan Collins", bio: "Seeking a sixth term" } },
+  { id: "OH", state: "Ohio", held: "R", kind: "Special election", inc: "R",
+    note: "The winner serves the rest of JD Vance's term, through January 2029.",
+    D: { name: "Sherrod Brown", bio: "Three-term senator who lost his seat in 2024" },
+    R: { name: "Jon Husted", bio: "Appointed in 2025; former lieutenant governor" } },
+  { id: "AK", state: "Alaska", held: "R", kind: "Incumbent · Ranked choice", inc: "R",
+    note: "Peltola finished first in the August top-four primary, 49.5% to 41.4%.",
+    D: { name: "Mary Peltola", bio: "Former at-large congresswoman" },
+    R: { name: "Dan Sullivan", bio: "Seeking a third term" } },
+  { id: "IA", state: "Iowa", held: "R", kind: "Open seat",
+    note: "Joni Ernst is retiring after two terms.",
+    D: { name: "Josh Turek", bio: "State representative from Council Bluffs" },
+    R: { name: "Ashley Hinson", bio: "Congresswoman from eastern Iowa" } },
+  { id: "KS", state: "Kansas", held: "R", kind: "Incumbent", inc: "R",
+    note: "No Democrat has won a Senate race in Kansas since 1932.",
+    D: { name: "Adam Hamilton", bio: "Pastor of the largest United Methodist church in the U.S." },
+    R: { name: "Roger Marshall", bio: "First-term senator and physician" } },
+];
+
+/* ===== App ===== */
+
+const BASE = { D: 47, R: 53 };
+const CONF = ["Lean", "Likely", "Safe"];
+const STORE_KEY = "senate-call-2026";
+const $ = (id) => document.getElementById(id);
+
+let state = { name: "", picks: {} }; // picks: { MI: { p: "D", c: 1 } }
+
+function load() {
+  try { const s = JSON.parse(localStorage.getItem(STORE_KEY)); if (s && s.picks) state = s; } catch (e) {}
+}
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+function build() {
+  $("list").innerHTML = RACES.map(r => `
+    <section class="race" id="race-${r.id}">
+      <div class="race-info">
+        <div class="label">
+          <span class="held-${r.held}">${r.held === "D" ? "Dem." : "Rep."} seat</span><span class="dot">|</span><span>${r.kind}</span>
+          <span class="flip">${r.held === "D" ? "Rep." : "Dem."} flip</span>
+        </div>
+        <h3>${r.state}</h3>
+        <p>${r.note}</p>
+      </div>
+      <div>
+        <div class="ballot" role="group" aria-label="${r.state} winner">
+          ${["D", "R"].map(p => `
+            <button type="button" class="cand ${p}" data-p="${p}" aria-pressed="false">
+              <span class="radio"></span>
+              <span>
+                <span class="nm">${r[p].name} <span class="pty">(${p})</span></span>
+                <span class="bio">${r[p].bio}</span>
+              </span>
+              ${r.inc === p ? `<span class="inc">Incumbent</span>` : `<span></span>`}
+            </button>`).join("")}
+        </div>
+        <div class="conf">
+          <span class="prompt">Choose a winner to set your confidence.</span>
+          <span class="label">Confidence</span>
+          <span class="opts">${CONF.map((c, i) => `<button type="button" data-c="${i}" aria-pressed="false">${c}</button>`).join("")}</span>
+        </div>
+        <div class="result"></div>
+      </div>
+    </section>`).join("");
+
+  RACES.forEach(r => {
+    const el = $("race-" + r.id);
+    el.querySelectorAll(".cand").forEach(b => b.addEventListener("click", () => pick(r.id, b.dataset.p)));
+    el.querySelectorAll(".conf button").forEach(b => b.addEventListener("click", () => confidence(r.id, +b.dataset.c)));
+  });
+
+}
+
+function pick(id, p) {
+  const cur = state.picks[id];
+  if (cur && cur.p === p) delete state.picks[id];   // click again to clear
+  else state.picks[id] = { p, c: cur ? cur.c : 0 };
+  save(); render();
+}
+function confidence(id, c) {
+  if (!state.picks[id]) return;
+  state.picks[id].c = c;
+  save(); render();
+}
+
+// Seats each side has locked in from the picks, with uncalled races left open.
+function tally() {
+  let d = BASE.D, r = BASE.R, open = 0;
+  RACES.forEach(x => {
+    if (x.held === "D") d--; else r--;
+    const pk = state.picks[x.id];
+    if (!pk) open++; else if (pk.p === "D") d++; else r++;
+  });
+  return { d, r, open };
+}
+
+function verdict() {
+  const { d, r, open } = tally();
+  const net = d - BASE.D;
+  const netTxt = net === 0 ? "No net change" : `${net > 0 ? "Democrats" : "Republicans"} gain ${Math.abs(net)}`;
+  const left = open ? `${open} still uncalled` : "all seven called";
+  if (open === RACES.length) return { head: "No picks yet", sub: "Your projected Senate updates as you go" };
+  if (d >= 51) return { head: "Democrats win control", sub: `${netTxt} · ${left}` };
+  if (r >= 50) return { head: "Republicans keep control", sub: `${netTxt} · ${left}` };
+  return { head: "Control still up for grabs", sub: `${netTxt} · ${left}` };
+}
+
+function render() {
+  const { d, r, open } = tally();
+  const n = RACES.length - open;
+  let hits = 0, called = 0;
+
+  RACES.forEach(x => {
+    const el = $("race-" + x.id);
+    const pk = state.picks[x.id];
+    if (pk) el.dataset.pick = pk.p; else delete el.dataset.pick;
+    el.classList.toggle("is-flip", !!pk && pk.p !== x.held);
+    el.querySelectorAll(".cand").forEach(b => b.setAttribute("aria-pressed", String(!!pk && pk.p === b.dataset.p)));
+    el.querySelectorAll(".conf button").forEach(b => b.setAttribute("aria-pressed", String(!!pk && pk.c === +b.dataset.c)));
+
+    const res = RESULTS[x.id], out = el.querySelector(".result");
+    out.className = "result";
+    if (res) {
+      called++;
+      out.classList.add("show");
+      if (!pk) { out.textContent = `Result: ${x[res].name} won. You didn't make a pick.`; out.classList.add("called"); }
+      else if (pk.p === res) { hits++; out.textContent = `✓ Correct. ${x[res].name} won.`; out.classList.add("hit"); }
+      else { out.textContent = `✗ Missed. ${x[res].name} won.`; out.classList.add("miss"); }
+    }
+  });
+
+
+  // ballot table
+  $("tbody").innerHTML = RACES.map(x => {
+    const pk = state.picks[x.id];
+    if (!pk) return `<tr><td class="st">${x.state}</td><td class="none" colspan="3">No pick</td></tr>`;
+    const flip = pk.p !== x.held ? `<span style="color:var(--${pk.p === "D" ? "dem" : "rep"})">Flip</span>` : "";
+    return `<tr><td class="st">${x.state}</td><td><span class="sw ${pk.p}"></span>${x[pk.p].name} (${pk.p})</td><td><span class="pill c${pk.c}">${CONF[pk.c]}</span></td><td class="fl">${flip}</td></tr>`;
+  }).join("");
+  $("tfoot").textContent = n ? `${d} Dem. · ${r} Rep.${open ? ` · ${open} uncalled` : ""}` : "—";
+  $("score").textContent = called ? `Score: ${hits} of ${called} called races` : `${n} of ${RACES.length} picked`;
+
+  $("copyImg").disabled = n === 0;
+}
+
+/* ===== Ballot image ===== */
+
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// Draws the ballot card on a canvas (2x for crisp text in Discord).
+async function drawBallot() {
+  await document.fonts.ready;
+  const W = 640, PAD = 32, ROW = 46, S = 2;
+  const H = 214 + RACES.length * ROW + 96;
+  const cv = document.createElement("canvas");
+  cv.width = W * S; cv.height = H * S;
+  const ctx = cv.getContext("2d");
+  ctx.scale(S, S);
+  ctx.textBaseline = "alphabetic";
+
+  const ink = "#111", muted = "#666", faint = "#9a9a9a", rule = "#d6d6d6";
+  const dem = css("--dem"), rep = css("--rep");
+  const SERIF = '"Source Serif 4", Georgia, serif', SANS = '"Libre Franklin", Arial, sans-serif';
+  const line = (y, color, w = 1) => { ctx.fillStyle = color; ctx.fillRect(PAD, y, W - PAD * 2, w); };
+
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, W, H);
+
+  // masthead
+  ctx.fillStyle = ink; ctx.textAlign = "center";
+  ctx.font = `700 30px ${SERIF}`; ctx.fillText("The Senate Call", W / 2, 54);
+  line(70, ink); line(74, ink);
+  ctx.font = `600 11px ${SANS}`; ctx.fillStyle = muted;
+  ctx.fillText("2026 SENATE BATTLEGROUND PICKS", W / 2, 94);
+
+  // who + verdict
+  ctx.textAlign = "left";
+  const who = state.name ? "@" + state.name : "My picks";
+  ctx.fillStyle = ink; ctx.font = `600 24px ${SERIF}`; ctx.fillText(who, PAD, 134);
+  const v = verdict();
+  ctx.textAlign = "right"; ctx.font = `700 14px ${SANS}`; ctx.fillText(v.head, W - PAD, 124);
+  ctx.font = `500 11.5px ${SANS}`; ctx.fillStyle = muted; ctx.fillText(v.sub, W - PAD, 141);
+  ctx.textAlign = "left";
+
+  // seat strip
+  const { d, r } = tally();
+  const sx = PAD, sw = W - PAD * 2, cell = sw / 100, sy = 158;
+  for (let i = 0; i < 100; i++) {
+    ctx.fillStyle = i < d ? dem : i >= 100 - r ? rep : "#e2e2e2";
+    ctx.fillRect(sx + i * cell, sy, cell - 1, 14);
+  }
+  ctx.fillStyle = ink; ctx.fillRect(sx + sw / 2 - 0.75, sy - 5, 1.5, 24);
+  ctx.font = `700 13px ${SANS}`;
+  ctx.fillStyle = dem; ctx.fillText(`${d} Dem.`, PAD, 192);
+  ctx.textAlign = "right"; ctx.fillStyle = rep; ctx.fillText(`${r} Rep.`, W - PAD, 192);
+  ctx.textAlign = "center"; ctx.fillStyle = muted; ctx.font = `500 11px ${SANS}`; ctx.fillText("51 for control", W / 2, 192);
+  ctx.textAlign = "left";
+
+  // table header
+  let y = 214;
+  ctx.font = `700 10.5px ${SANS}`; ctx.fillStyle = muted;
+  const cx = { st: PAD, pk: PAD + 120, cf: PAD + 410, fl: W - PAD };
+  ctx.fillText("STATE", cx.st, y + 12); ctx.fillText("PICK", cx.pk, y + 12); ctx.fillText("CONFIDENCE", cx.cf, y + 12);
+  line(y + 20, ink);
+  y += 20;
+
+  const pillColors = [
+    [css("--lean-bg"), css("--lean-ink"), css("--lean-line")],
+    [css("--likely-bg"), css("--likely-ink"), css("--likely-line")],
+    [css("--safe-bg"), css("--safe-ink"), css("--safe-line")],
+  ];
+
+  RACES.forEach(x => {
+    const pk = state.picks[x.id], mid = y + ROW / 2;
+    ctx.fillStyle = ink; ctx.font = `700 14px ${SANS}`; ctx.fillText(x.state, cx.st, mid + 5);
+    if (!pk) {
+      ctx.fillStyle = faint; ctx.font = `italic 400 15px ${SERIF}`; ctx.fillText("No pick", cx.pk, mid + 5);
+    } else {
+      ctx.fillStyle = pk.p === "D" ? dem : rep; ctx.fillRect(cx.pk, mid - 5, 10, 10);
+      ctx.fillStyle = ink; ctx.font = `600 14px ${SANS}`; ctx.fillText(`${x[pk.p].name} (${pk.p})`, cx.pk + 18, mid + 5);
+      // confidence pill
+      const [bg, fg, ln] = pillColors[pk.c], label = CONF[pk.c];
+      ctx.font = `600 12px ${SANS}`;
+      const pw = ctx.measureText(label).width + 22;
+      roundRect(ctx, cx.cf, mid - 11, pw, 22, 11);
+      ctx.fillStyle = bg; ctx.fill(); ctx.strokeStyle = ln; ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillStyle = fg; ctx.fillText(label, cx.cf + 11, mid + 4);
+      if (pk.p !== x.held) {
+        ctx.textAlign = "right"; ctx.font = `800 11px ${SANS}`; ctx.fillStyle = pk.p === "D" ? dem : rep;
+        ctx.fillText("FLIP", cx.fl, mid + 4); ctx.textAlign = "left";
+      }
+    }
+    y += ROW;
+    line(y, rule);
+  });
+
+  // footer
+  line(y + 22, ink); line(y + 26, ink);
+  ctx.fillStyle = muted; ctx.font = `500 11px ${SANS}`;
+  ctx.fillText(new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }), PAD, y + 48);
+  ctx.textAlign = "right"; ctx.fillText("Election Day: Nov. 3, 2026", W - PAD, y + 48);
+
+  return new Promise(res => cv.toBlob(res, "image/png"));
+}
+
+async function copyImage() {
+  const blobP = drawBallot();
+  try {
+    // Pass the promise straight in so Safari keeps the click's permission.
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": blobP })]);
+    toast("Ballot copied. Paste it in Discord.");
+  } catch (e) {
+    // No image clipboard (older browsers, file://): download it instead.
+    const blob = await blobP;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `senate-picks${state.name ? "-" + state.name : ""}.png`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    toast("Couldn't copy, so it downloaded instead");
+  }
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+
+/* ===== Wire up ===== */
+load();
+build();
+render();
+$("name").value = state.name;
+
+$("name").addEventListener("input", e => {
+  state.name = e.target.value.trim().replace(/^@+/, "");
+  save();
+});
+$("copyImg").addEventListener("click", copyImage);
+$("clear").addEventListener("click", () => {
+  if (!Object.keys(state.picks).length) return;
+  if (confirm("Clear all your picks?")) { state.picks = {}; save(); render(); }
+});
+</script>
+</body>
+</html>
